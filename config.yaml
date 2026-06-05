@@ -1,0 +1,86 @@
+paths:
+  station_data_root: /root/autodl-tmp/data/intermagnet_raw
+  symh_data_root: /root/autodl-tmp/data/symh_raw
+  output_root: /root/autodl-tmp/data/geomag_dataset
+
+stations:
+  - HON
+  - SJG
+  - TUC
+  - BOU
+  - FRD
+  - FUR
+  - NGK
+  - NUR
+  - ASC
+  - MBO
+  - ABG
+  - HYB
+  - KAK
+  - CNB
+  - ASP
+  - BRW
+
+years:
+  start: 2008
+  end: 2022
+
+station_data:
+  components: [X, Y, Z]
+  accepted_data_types:
+    - Definitive
+    - Quasi-definitive
+    - Provisional
+  rejected_data_types:
+    - Variation
+  missing_value_markers:
+    - 99999
+    - 99999.0
+    - 999999
+    - 999999.0
+    - -99999
+    - -99999.0
+    - -999999
+    - -999999.0
+  read_chunk_rows: 100000
+
+symh:
+  file_pattern: "{year}.txt"
+  missing_value_markers:
+    - 99999
+    - 999999
+    - -99999
+    - -999999
+  storm_threshold_nt: -50
+  nonstorm_threshold_nt: -30
+  minimum_core_minutes: 30
+  merge_gap_hours: 12
+  nonstorm_buffer_hours: 24
+
+window:
+  length_hours: 6
+  stride_hours: 1
+  baseline_minutes: 60
+
+split:
+  train_years: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017]
+  val_years: [2018, 2019]
+  test_years: [2020, 2021, 2022]
+
+features:
+  raw_delta: true
+  raw_diff: true
+  psd:
+    enabled: false
+    nperseg: 128
+    noverlap: 64
+  cwt:
+    enabled: false
+    wavelet: morl
+    num_scales: 32
+    min_period_minutes: 4
+    max_period_minutes: 180
+
+runtime:
+  overwrite: false
+  log_level: INFO

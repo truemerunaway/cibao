@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local data and generated datasets
+/20[0-9][0-9].txt
+/fmt.txt
+/data/
+/outputs/
+/geomag_dataset_output/
+*.npy
+*.npz
+*.parquet
+*.log
+*.tmp
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
