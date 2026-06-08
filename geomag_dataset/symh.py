@@ -162,12 +162,14 @@ def build_storm_events(
     valid = np.concatenate(valid_parts).astype(bool, copy=False)
     core = valid & (values <= storm_threshold_nt)
     raw_runs = _find_core_runs(core)
+    qualified_runs = [
+        run for run in raw_runs if run.core_minutes >= minimum_core_minutes
+    ]
     merged_runs = _merge_core_runs(
-        raw_runs,
+        qualified_runs,
         valid,
         merge_gap_minutes=int(round(merge_gap_hours * 60)),
     )
-    accepted_runs = [run for run in merged_runs if run.core_minutes >= minimum_core_minutes]
     origin = pd.Timestamp(year=years[0], month=1, day=1)
 
     event_columns = [
@@ -182,7 +184,7 @@ def build_storm_events(
         "split",
     ]
     records: list[dict[str, Any]] = []
-    for run in accepted_runs:
+    for run in merged_runs:
         event_start = origin + pd.Timedelta(minutes=run.start)
         event_end = origin + pd.Timedelta(minutes=run.end)
         event_values = values[run.start : run.end]
