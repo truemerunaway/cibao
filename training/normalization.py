@@ -83,8 +83,10 @@ class StationRobustNormalizer:
             selected = np.sort(
                 rng.choice(len(station_frame), size=sample_count, replace=False)
             )
-            windows = np.empty((sample_count, 3, int(station_frame.iloc[0]["length"])))
-            windows = windows.astype(np.float32, copy=False)
+            windows = np.empty(
+                (sample_count, 3, int(station_frame.iloc[0]["length"])),
+                dtype=np.float32,
+            )
             for output_index, row_index in enumerate(selected):
                 row = station_frame.iloc[int(row_index)]
                 windows[output_index] = raw_delta(
