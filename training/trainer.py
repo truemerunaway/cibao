@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import random
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any
 
@@ -62,6 +63,17 @@ def _scaler(enabled: bool):
         except TypeError:
             return torch.amp.GradScaler(enabled=enabled)
     return torch.cuda.amp.GradScaler(enabled=enabled)
+
+
+def _autocast_context(device, enabled: bool):
+    torch = require_torch()
+    if not enabled:
+        return nullcontext()
+    return torch.autocast(
+        device_type=device.type,
+        dtype=torch.float16,
+        enabled=True,
+    )
 
 
 def _torch_load(path: Path, device):
@@ -217,11 +229,7 @@ def train_with_early_stopping(
             inputs = batch["input"].to(device, non_blocking=True)
             targets = batch["label"].to(device, non_blocking=True)
             optimizer.zero_grad(set_to_none=True)
-            with torch.autocast(
-                device_type=device.type,
-                dtype=torch.float16,
-                enabled=amp_enabled,
-            ):
+            with _autocast_context(device, amp_enabled):
                 logits = model(inputs)
                 loss = criterion(logits, targets)
             scaler.scale(loss).backward()
@@ -345,11 +353,7 @@ def train_fixed_epochs(
             inputs = batch["input"].to(device, non_blocking=True)
             targets = batch["label"].to(device, non_blocking=True)
             optimizer.zero_grad(set_to_none=True)
-            with torch.autocast(
-                device_type=device.type,
-                dtype=torch.float16,
-                enabled=amp_enabled,
-            ):
+            with _autocast_context(device, amp_enabled):
                 logits = model(inputs)
                 loss = criterion(logits, targets)
             scaler.scale(loss).backward()
