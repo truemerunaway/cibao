@@ -258,3 +258,53 @@ Logs are written to:
 ```text
 /root/autodl-tmp/data/geomag_dataset/logs/build_dataset.log
 ```
+
+## Experiment 1 training
+
+The training pipeline does not rebuild samples and does not use the legacy
+Parquet `split` field. It derives three development folds from event start
+years and NonStorm center dates, while keeping 2020-2022 sealed for the final
+test.
+
+Use the CUDA-enabled PyTorch already provided by the AutoDL image, then install
+the remaining dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Run three-fold cross-validation and OOF post-processing selection:
+
+```bash
+python train.py cv --config train_config.yaml
+```
+
+Resume an interrupted run:
+
+```bash
+python train.py cv --config train_config.yaml --resume
+```
+
+Retrain the fourth model on all 2008-2019 development data:
+
+```bash
+python train.py final --config train_config.yaml
+```
+
+Only after model and threshold selection are locked, evaluate the permanent
+2020-2022 test set:
+
+```bash
+python evaluate.py --config train_config.yaml
+```
+
+Long-series event inference accepts one or more IAGA-2002 files:
+
+```bash
+python predict_long_series.py \
+  --config train_config.yaml \
+  --series FUR=/path/to/fur.txt \
+  --series NGK=/path/to/ngk.txt \
+  --output predicted_events.csv \
+  --window-output hourly_scores.csv
+```

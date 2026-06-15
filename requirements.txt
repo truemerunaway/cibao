@@ -6,3 +6,4 @@ scipy>=1.10
 PyWavelets>=1.4
 matplotlib>=3.7
 tqdm>=4.66
+scikit-learn>=1.3
