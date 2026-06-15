@@ -138,6 +138,30 @@ To run everything:
 python main.py --config config.yaml --stage all
 ```
 
+### 5. Draw quality-control figures
+
+Before model training, draw diverse Storm, NonStorm, and Uncertain examples:
+
+```bash
+python inspect_windows.py --config config.yaml --samples-per-group 10
+```
+
+This writes at most 90 figures:
+
+```text
+figures_check/
+├── train/Storm/
+├── train/NonStorm/
+├── train/Uncertain/
+├── val/...
+├── test/...
+└── manifest.csv
+```
+
+Each figure shows delta XYZ, first-difference XYZ, and the matching SYM-H
+sequence. Sampling is performed across distinct event/date groups to avoid
+drawing many adjacent windows from the same storm.
+
 Run a small test first:
 
 ```bash
