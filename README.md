@@ -308,3 +308,17 @@ python predict_long_series.py \
   --output predicted_events.csv \
   --window-output hourly_scores.csv
 ```
+
+If a new SYM-H/SYM index file is available for the same period, build reference
+events and compare them with the model output:
+
+```bash
+python compare_symh_events.py \
+  --symh inference/inference_raw/SYM_2024.txt \
+  --predicted-events inference/infer_csv/events.csv \
+  --year 2024 \
+  --output-dir inference/infer_csv/symh_compare
+```
+
+The comparison writes MATLAB-friendly CSV files for the SYM-H time series,
+reference events, matched events, missed events, and false alarms.
